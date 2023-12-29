@@ -34,6 +34,7 @@ class ShipPlacementWindow(QWidget):
 
         self.player_ships = [[0] * 10 for _ in range(10)]
 
+
     def create_grid(self):
         for row in range(11):
             for col in range(11):
@@ -190,12 +191,12 @@ class GameWindow(QWidget):
         self.setGeometry(200, 200, 800, 400)
 
         self.ship_placements = ship_placements
-        self.current_player = 1
+        self.current_player = 2  # Изменено здесь
 
         self.layout = QHBoxLayout()
         self.player_fields = [self.create_player_field(player) for player in range(1, 3)]
+        self.layout.addWidget(self.player_fields[0])  # Изменено здесь
         self.layout.addWidget(self.player_fields[1])
-        self.layout.addWidget(self.player_fields[0])
 
         self.setLayout(self.layout)
 
@@ -230,7 +231,8 @@ class GameWindow(QWidget):
         return field_widget
 
     def field_button_clicked(self, player, row, col):
-        button = self.player_fields[player-1].layout().itemAtPosition(row+1, col+1).widget()
+        button = self.player_fields[player - 1].layout().itemAtPosition(row + 1, col + 1).widget()
+
         if player == self.current_player:
             if (row, col) in self.ship_placements[player]:
                 button.setStyleSheet("background-color: red")
@@ -238,13 +240,13 @@ class GameWindow(QWidget):
                 button.setStyleSheet("background-color: gray")
 
             if button.styleSheet() == "background-color: red":
-                # Если игрок попал, то его ход продолжается
+
                 return
 
             self.update_current_player_label()
             self.current_player = 2 if self.current_player == 1 else 1
 
-        # Игра окончена, когда нет оставшихся кораблей у одного из игроков
+
         if all(self.check_all_ships_destroyed(player) for player in range(1, 3)):
             self.show_game_over_message()
 
@@ -258,6 +260,10 @@ class GameWindow(QWidget):
     def update_current_player_label(self):
         for player in range(1, 3):
             field = self.player_fields[player-1].layout().itemAtPosition(0, 0).widget()
+            if player == self.current_player:
+                field.setText("Ваш ход")  # Изменено здесь
+            else:
+                field.setText("")  # Изменено здесь
 
     def show_game_over_message(self):
         winner = "Игрок 1" if self.current_player == 2 else "Игрок 2"
@@ -276,3 +282,4 @@ if __name__ == "__main__":
     game_setup_window = GameSetupWindow()
     game_setup_window.show()
     sys.exit(app.exec())
+
